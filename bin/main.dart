@@ -38,10 +38,7 @@ void main() {
   final joinedTable = userTable.join<JoinedTableColumnNames,
       AttributeColumnNames, JoinedTableAfterOperation>(
     other: attributeTable,
-    predicate: () => (
-      UserColumnNames.ID,
-      AttributeColumnNames.ID,
-    ),
+    predicate: () => (UserColumnNames.ID, AttributeColumnNames.ID),
     decoder: (value) => JoinedTableAfterOperation.fromJson(value),
     encoder: (value) => value.toJson(),
   );

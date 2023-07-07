@@ -1,16 +1,47 @@
 import 'dart:developer' as dev;
 
+/// Signature callback for decoding value of row.
+///
+/// example:
+/// ```dart
+/// decoder: (Map<String,dynamic> value)=>UserTableSchema.fromJson(value);
+/// ```
+///
+/// See also:
+///   - [Encoder]
 typedef Decoder<T extends TableDefinition, S> = T Function(S);
 
+/// Signature callback for encoding value of row.
+///
+/// example:
+/// ```dart
+/// encoder: (UserEntity user)=>user.toJson();
+/// ```
+///
+/// See also:
+///   - [Decoder]
 typedef Encoder<S, T extends TableDefinition> = S Function(T);
 
-typedef JoinPredicate<T extends Value, S extends Value> = (T, S) Function();
+/// A signature callback for predicting join, base on the column names.
+///
+/// Here [T] and [S] both represent the defined column of current table and
+/// targeted table on which join operation would be done.
+typedef JoinPredicate<T extends Enum, S extends Enum> = (T, S) Function();
 
-typedef ColumnTargetPredicate<TargetedColumn extends Value, TargetedValue>
+/// A signature callback for predicting the targeted row for operation.
+///
+/// Here [TargetedColumn] is the column of schema which will be considered when
+///  doing prediction and [TargetedValue] is expected value to be of
+/// [TargetedColumn].
+typedef ColumnTargetPredicate<TargetedColumn extends Enum, TargetedValue>
     = (TargetedColumn, TargetedValue) Function();
 
+/// A signature callback for mutation of any row.
+///
+/// Here [T] represent the row of the table.
 typedef Mutator<T extends TableDefinition> = T Function(T);
 
+/// Exception for invalid operation.
 class InvalidOperationException implements Exception {
   final String message;
   const InvalidOperationException(this.message);
@@ -19,16 +50,24 @@ class InvalidOperationException implements Exception {
   String toString() => message;
 }
 
-class Value<T extends Enum> {
-  const Value(this.name);
-  final String name;
-}
-
-class TableDefinition<T extends Value> {
+/// Represents the base table, with schema as [T].
+abstract class TableDefinition<T extends Enum> {
   const TableDefinition();
 }
 
-class Table<T extends TableDefinition<Type>, Type extends Value> {
+/// Represents the table.
+///
+/// example:
+///
+/// ```dart
+///   final Table<User, UserColumnNames> userTable = Table<User, UserColumnNames>(
+///     name: 'user',
+///     decoder: (value) => User.fromJson(value),
+///     encoder: (value) => value.toJson(),
+///   );
+/// ```
+///
+class Table<T extends TableDefinition<Type>, Type extends Enum> {
   final String name;
   final Decoder<T, dynamic> decoder;
   final Encoder<dynamic, T> encoder;
@@ -46,8 +85,9 @@ class Table<T extends TableDefinition<Type>, Type extends Value> {
     required this.encoder,
   }) : joined = true;
 
+  /// Joins this table with [other] based on the join [predicate] condition.
   Table<TD, J>
-      join<J extends Value, T2 extends Value, TD extends TableDefinition<J>>({
+      join<J extends Enum, T2 extends Enum, TD extends TableDefinition<J>>({
     required Table<TableDefinition<T2>, T2> other,
     required JoinPredicate<Type, T2> predicate,
     required Decoder<TD, dynamic> decoder,
@@ -103,9 +143,9 @@ class Table<T extends TableDefinition<Type>, Type extends Value> {
   }
 }
 
-class Query<T extends TableDefinition<Type>, Type extends Value> {}
+class Query<T extends TableDefinition<Type>, Type extends Enum> {}
 
-class QueryResult<T extends TableDefinition<Type>, Type extends Value> {
+class QueryResult<T extends TableDefinition<Type>, Type extends Enum> {
   final List<TableDefinition<Type>> result;
   const QueryResult(this.result);
 }

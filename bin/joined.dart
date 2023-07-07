@@ -39,7 +39,7 @@ class JoinedTableAfterOperation
       };
 }
 
-enum JoinedTableColumnNames implements Value {
+enum JoinedTableColumnNames {
   USER_NAME('USER_NAME'),
   FIRST_NAME('FIRST_NAME'),
   LAST_NAME('FIRST_NAME'),
@@ -48,6 +48,5 @@ enum JoinedTableColumnNames implements Value {
   ID('ID');
 
   const JoinedTableColumnNames(this.name);
-  @override
   final String name;
 }
