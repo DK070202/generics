@@ -26,12 +26,11 @@ class Attribute extends TableDefinition<AttributeColumnNames> {
       };
 }
 
-enum AttributeColumnNames implements Value {
+enum AttributeColumnNames {
   APP_VERSION('USER_NAME'),
   OS('OS'),
   ID('ID');
 
   const AttributeColumnNames(this.name);
-  @override
   final String name;
 }

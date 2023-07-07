@@ -30,13 +30,12 @@ class User extends TableDefinition<UserColumnNames> {
       };
 }
 
-enum UserColumnNames implements Value {
+enum UserColumnNames {
   USER_NAME('USER_NAME'),
   FIRST_NAME('FIRST_NAME'),
   LAST_NAME('FIRST_NAME'),
   ID('ID');
 
   const UserColumnNames(this.name);
-  @override
   final String name;
 }
